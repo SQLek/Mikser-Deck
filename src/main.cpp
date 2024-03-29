@@ -3,7 +3,7 @@
 
 void setup()
 {
-#ifdef POTENTIOMETERS
+#ifdef POTS_ENABLE
   // set analog input pinmode for each pin assigned to potentiometers
   analogReadResolution(10);
   for (uint8_t i = 0; i < numPots; i++)
@@ -12,7 +12,7 @@ void setup()
   }
 #endif
 
-#ifdef USES_MUTE_BUTTONS
+#ifdef MUTE_ENABLE
   // set digtal input pinmode for each pin assigned to buttons
   buttonTimers = new VirtualDelay[numButtons];
   buttonLastValues = new uint8_t[numButtons];
@@ -29,7 +29,7 @@ void setup()
 }
 
 // read each slider status and send over serial
-#ifdef POTENTIOMETERS
+#ifdef POTS_ENABLE
 void readSlidersSendSerial()
 {
   for (uint8_t i = 0; i < numPots; i++)
@@ -43,7 +43,7 @@ void readSlidersSendSerial()
 }
 #endif
 
-#ifdef USES_MUTE_BUTTONS
+#ifdef MUTE_ENABLE
 void readButtonsSendSerial()
 {
   if (!numButtons)
@@ -88,11 +88,11 @@ void readButtonsSendSerial()
 
 void loop()
 {
-#ifdef POTENTIOMETERS
+#ifdef POTS_ENABLE
   readSlidersSendSerial();
 #endif
 
-#ifdef USES_MUTE_BUTTONS
+#ifdef MUTE_ENABLE
   readButtonsSendSerial();
 #endif
 
