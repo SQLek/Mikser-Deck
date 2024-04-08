@@ -33,7 +33,8 @@ static uint8_t *buttonStates;
 #include <Adafruit_SSD1306.h>
 #define OLED_WIDTH 128
 #define OLED_HEIGHT 64
-Adafruit_SSD1306 oled(OLED_WIDTH, OLED_HEIGHT, &Wire, SCREEN_SCL, SCREEN_SDA);
+// SCREEN_SCL, SCREEN_SDA
+Adafruit_SSD1306 oled(OLED_WIDTH, OLED_HEIGHT, &Wire, -1);
 
 #endif /* SSD1306 */
 

@@ -28,10 +28,13 @@ void setup()
 #endif
 
 #ifdef SSD1306
-  if (oled.begin())
+  Wire.setPins(SCREEN_SDA, SCREEN_SCL);
+  if (oled.begin(SSD1306_SWITCHCAPVCC, SSD1306))
   {
     Serial.println("SSD1306 init failed!");
   }
+  oled.clearDisplay();
+  oled.clearDisplay();
 #endif
 
   Serial.begin(9600);
@@ -109,12 +112,10 @@ void loop()
   readButtonsSendSerial();
 #endif
 #ifdef SCREEN_SCL
-  oled.clearDisplay();
   oled.setTextColor(WHITE);
   oled.setTextSize(1);
   oled.setCursor(45, 20);
   oled.println("MEOW");
-  oled.invertDisplay(true);
   oled.display();
 #endif
   delay(10);

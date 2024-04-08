@@ -3,4 +3,4 @@
 
 #define SCREEN_SCL 20
 #define SCREEN_SDA 21
-#define SSD1306 0x3D
+#define SSD1306 0x3C
