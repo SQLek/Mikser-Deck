@@ -24,3 +24,16 @@ static VirtualDelay *buttonTimers;
 static uint8_t *buttonLastValues;
 static uint8_t *buttonStates;
 #endif
+
+#ifdef SCREEN_PINS
+#include <Wire.h>
+
+#ifdef SSD1306
+#include <Adafruit_GFX.h>
+#include <Adafruit_SSD1306.h>
+#define OLED_WIDTH 128
+#define OLED_HEIGHT 32
+
+#endif /* SSD1306 */
+
+#endif

@@ -4,8 +4,10 @@
 void setup()
 {
 #ifdef POTS_ENABLE
-  // set analog input pinmode for each pin assigned to potentiometers
+// set analog input pinmode for each pin assigned to potentiometers
+#ifndef ARDUINO_ARCH_AVR
   analogReadResolution(10);
+#endif
   for (uint8_t i = 0; i < numPots; i++)
   {
     pinMode(analogInputs[i], INPUT);
@@ -37,7 +39,7 @@ void readSlidersSendSerial()
     if (i != 0)
       Serial.print("|");
 
-    Serial.printf("%d", analogRead(analogInputs[i]));
+    Serial.print(String(analogRead(analogInputs[i])));
   }
   Serial.println();
 }
@@ -59,14 +61,16 @@ void readButtonsSendSerial()
     // check if value has changed if not then skip and send over serial
     if (value == lastValue)
     {
-      Serial.printf("|%d", buttonStates[i]);
+      Serial.print("|");
+      Serial.print(String(buttonStates[i]));
       continue;
     }
 
     // if debouncing timer not elapsed skip button check and send over serial
     if (buttonTimers[i].running && !buttonTimers[i].elapsed())
     {
-      Serial.printf("|%d", buttonStates[i]);
+      Serial.print("|");
+      Serial.print(String(buttonStates[i]));
       continue;
     }
 
@@ -80,7 +84,8 @@ void readButtonsSendSerial()
       buttonStates[i] = ~buttonStates[i] & 0x01;
     }
 
-    Serial.printf("|%d", buttonStates[i]);
+    Serial.print("|");
+    Serial.print(String(buttonStates[i]));
   }
   Serial.println();
 }
