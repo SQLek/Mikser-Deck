@@ -27,6 +27,13 @@ void setup()
   }
 #endif
 
+#ifdef SSD1306
+  if (oled.begin())
+  {
+    Serial.println("SSD1306 init failed!");
+  }
+#endif
+
   Serial.begin(9600);
 }
 
@@ -93,6 +100,7 @@ void readButtonsSendSerial()
 
 void loop()
 {
+
 #ifdef POTS_ENABLE
   readSlidersSendSerial();
 #endif
@@ -100,6 +108,14 @@ void loop()
 #ifdef MUTE_ENABLE
   readButtonsSendSerial();
 #endif
-
+#ifdef SCREEN_SCL
+  oled.clearDisplay();
+  oled.setTextColor(WHITE);
+  oled.setTextSize(1);
+  oled.setCursor(45, 20);
+  oled.println("MEOW");
+  oled.invertDisplay(true);
+  oled.display();
+#endif
   delay(10);
 }

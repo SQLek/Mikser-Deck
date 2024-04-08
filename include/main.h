@@ -25,14 +25,15 @@ static uint8_t *buttonLastValues;
 static uint8_t *buttonStates;
 #endif
 
-#ifdef SCREEN_PINS
+#ifdef SCREEN_SCL
 #include <Wire.h>
 
 #ifdef SSD1306
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #define OLED_WIDTH 128
-#define OLED_HEIGHT 32
+#define OLED_HEIGHT 64
+Adafruit_SSD1306 oled(OLED_WIDTH, OLED_HEIGHT, &Wire, SCREEN_SCL, SCREEN_SDA);
 
 #endif /* SSD1306 */
 
