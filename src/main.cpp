@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "display.h"
 
 void setup()
 {
@@ -27,18 +28,11 @@ void setup()
   }
 #endif
 
-#ifdef SSD1306
-
-  //Wire.setPins(SCREEN_SDA, SCREEN_SCL);
-  if (oled.begin(SSD1306_SWITCHCAPVCC, SSD1306))
-  {
-    Serial.println("SSD1306 init failed!");
-  }
-  oled.clearDisplay();
-  oled.clearDisplay();
-#endif
-
   Serial.begin(9600);
+
+#ifdef SCREEN_SCL
+  setupScreen();
+#endif
 }
 
 // read each slider status and send over serial
@@ -102,18 +96,6 @@ void readButtonsSendSerial()
 }
 #endif
 
-void drawBar(int level) {
-
-   int barHeight = oled.height() * level / 100; // Scale the bar height according to `poziom` variable
-  oled.clearDisplay();
-
-  for (int i = 0; i < barHeight; i++) {
-    oled.drawPixel(0, oled.height() - i - 1, SSD1306_WHITE); // Draw each pixel of the bar
-  }
-
-  oled.display();
-}
-
 void loop()
 {
 
@@ -124,9 +106,9 @@ void loop()
 #ifdef MUTE_ENABLE
   readButtonsSendSerial();
 #endif
+
 #ifdef SCREEN_SCL
- drawBar(500);
+  testScreen();
+  sleep(2);
 #endif
- 
 }
-  
