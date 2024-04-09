@@ -28,7 +28,8 @@ void setup()
 #endif
 
 #ifdef SSD1306
-  Wire.setPins(SCREEN_SDA, SCREEN_SCL);
+
+  //Wire.setPins(SCREEN_SDA, SCREEN_SCL);
   if (oled.begin(SSD1306_SWITCHCAPVCC, SSD1306))
   {
     Serial.println("SSD1306 init failed!");
@@ -101,6 +102,18 @@ void readButtonsSendSerial()
 }
 #endif
 
+void drawBar(int level) {
+
+   int barHeight = oled.height() * level / 100; // Scale the bar height according to `poziom` variable
+  oled.clearDisplay();
+
+  for (int i = 0; i < barHeight; i++) {
+    oled.drawPixel(0, oled.height() - i - 1, SSD1306_WHITE); // Draw each pixel of the bar
+  }
+
+  oled.display();
+}
+
 void loop()
 {
 
@@ -112,11 +125,8 @@ void loop()
   readButtonsSendSerial();
 #endif
 #ifdef SCREEN_SCL
-  oled.setTextColor(WHITE);
-  oled.setTextSize(1);
-  oled.setCursor(45, 20);
-  oled.println("MEOW");
-  oled.display();
+ drawBar(500);
 #endif
-  delay(10);
+ 
 }
+  
