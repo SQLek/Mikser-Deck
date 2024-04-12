@@ -146,6 +146,19 @@ void testScreen(){
     }
   oled.display();
   delay(70);
+  
     }
-    
+    delay(570);
+    oled.clearDisplay();
+
+for (uint8_t i = 26; i >= 1; i--)
+    {
+        for (uint8_t c = 0; c <= 4; c++){
+        oled.drawChar(Xpos[c] + 14, Ypos[c] + 13, indicatorNr[c], WHITE, BLACK, 1);
+        oled.drawBitmap(Xpos[c], Ypos[c], epd_bitmap_allArray[i], 32, 32, WHITE);
+    }
+  oled.display();
+  oled.clearDisplay();
+  delay(70);
+    }    
 }
