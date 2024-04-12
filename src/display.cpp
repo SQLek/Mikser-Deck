@@ -16,6 +16,22 @@ unsigned char indicatorNr [] = {
     0x35
 };
 
+uint8_t Xpos[] = {
+    28,
+    68,
+    8,
+    48,
+    88,
+};
+
+uint8_t Ypos[] = {
+    1,
+    1,
+    31,
+    31,
+    31
+};
+
 // int8_t points[] = {
 //     0, 17,
 //     6, 16,
@@ -115,19 +131,19 @@ void setupScreen()
 // }
 void testScreen(){
     oled.clearDisplay();
-    oled.drawChar(44 - 2, 17 - 3, indicatorNr[0], WHITE, BLACK, 1);
-    oled.drawChar(84 - 2, 17 - 3, indicatorNr[1], WHITE, BLACK, 1);
-    oled.drawChar(64 - 2, 47 - 3, indicatorNr[2], WHITE, BLACK, 1);
-    oled.drawChar(24 - 2, 47 - 3, indicatorNr[3], WHITE, BLACK, 1);
-    oled.drawChar(104 - 2, 47 - 3,indicatorNr[4], WHITE, BLACK, 1);
+    // oled.drawChar(44 - 2, 17 - 3, indicatorNr[0], WHITE, BLACK, 1);
+    // oled.drawChar(84 - 2, 17 - 3, indicatorNr[1], WHITE, BLACK, 1);
+    // oled.drawChar(64 - 2, 47 - 3, indicatorNr[2], WHITE, BLACK, 1);
+    // oled.drawChar(24 - 2, 47 - 3, indicatorNr[3], WHITE, BLACK, 1);
+    // oled.drawChar(104 - 2, 47 - 3,indicatorNr[4], WHITE, BLACK, 1);
+    
 
     for (uint8_t i = 1; i < 27; i++)
     {
-        oled.drawBitmap(28, 1, epd_bitmap_allArray[i], 32, 32, WHITE);
-        oled.drawBitmap(68, 1, epd_bitmap_allArray[i], 32, 32, WHITE);
-        oled.drawBitmap(8, 31, epd_bitmap_allArray[i], 32, 32, WHITE);
-        oled.drawBitmap(48, 31, epd_bitmap_allArray[i], 32, 32, WHITE);
-        oled.drawBitmap(88, 31, epd_bitmap_allArray[i], 32, 32, WHITE);
+        for (uint8_t c = 0; c <= 4; c++){
+        oled.drawChar(Xpos[c] + 14, Ypos[c] + 13, indicatorNr[c], WHITE, BLACK, 1);
+        oled.drawBitmap(Xpos[c], Ypos[c], epd_bitmap_allArray[i], 32, 32, WHITE);
+    }
   oled.display();
   delay(70);
     }
