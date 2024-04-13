@@ -1,5 +1,6 @@
 
 #include "main.h"
+#include "display.h"
 
 void setup()
 {
@@ -28,6 +29,10 @@ void setup()
 #endif
 
   Serial.begin(9600);
+
+#ifdef SCREEN_SCL
+  setupScreen();
+#endif
 }
 
 // read each slider status and send over serial
@@ -93,6 +98,7 @@ void readButtonsSendSerial()
 
 void loop()
 {
+
 #ifdef POTS_ENABLE
   readSlidersSendSerial();
 #endif
@@ -101,5 +107,8 @@ void loop()
   readButtonsSendSerial();
 #endif
 
-  delay(10);
+#ifdef SCREEN_SCL
+  testScreen();
+  sleep(2);
+#endif
 }
