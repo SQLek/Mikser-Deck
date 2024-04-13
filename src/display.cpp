@@ -1,5 +1,4 @@
 #include "display.h"
-
 #include <Adafruit_GFX.h>
 #include <Adafruit_SSD1306.h>
 #include "gfx.h"
@@ -8,15 +7,17 @@
 
 Adafruit_SSD1306 oled(SCREEN_WIDTH, SCREEN_HEIGHT);
 
-unsigned char indicatorNr [] = {
+// gauge digit indicators 1-5
+unsigned char indicatorCharacter[] = {
     0x31,
     0x32,
     0x33,
     0x34,
-    0x35
+    0x35,
 };
 
-uint8_t Xpos[] = {
+// x position of gauge images
+uint8_t indicatorXpos[] = {
     28,
     68,
     8,
@@ -24,37 +25,14 @@ uint8_t Xpos[] = {
     88,
 };
 
-uint8_t Ypos[] = {
+// y position of gauge images
+uint8_t indicatorYpos[] = {
     1,
     1,
     31,
     31,
-    31
+    31,
 };
-
-// int8_t points[] = {
-//     0, 17,
-//     6, 16,
-//     11, 14,
-//     15, 9,
-//     17, 3,
-//     17, -3,
-//     15, -9,
-//     11, -14,
-//     6, -16,
-//     1, -17,
-//     -6, -16,
-//     -11, -14,
-//     -15, -9,
-//     -17, -3,
-//     -17, 3,
-//     -15, 9,
-//     -11, 14,
-//     -6, 16,
-//     0, 17, // fake entry - double of 0 index
-//     6, 16};
-
-// static uint8_t animation;
 
 void setupScreen()
 {
@@ -65,100 +43,52 @@ void setupScreen()
         Serial.println(F("fail"));
     }
     oled.clearDisplay();
-   // animation = 0;
 }
 
-// void drawCircleIndicator(uint8_t x, uint8_t y, uint8_t size, uint16_t volume, char c)
-// {
-//     volume = volume / 64;
-//     oled.fillCircle(x, y, size, WHITE);
-//     oled.fillCircle(x, y, size / 2, BLACK);
+void drawIndicator(uint8_t indicatorId, uint8_t frameId)
+{
+    oled.drawChar(
+        indicatorXpos[indicatorId] + 14,
+        indicatorYpos[indicatorId] + 13,
+        indicatorCharacter[indicatorId],
+        WHITE,
+        BLACK,
+        1);
+    oled.drawBitmap(
+        indicatorXpos[indicatorId],
+        indicatorYpos[indicatorId],
+        epd_bitmap_allArray[frameId],
+        32,
+        32,
+        WHITE);
+}
 
-//     for (uint8_t i = 0; i < volume; i++)
-//     {
-//         uint8_t j = i + 1;
-//         oled.fillTriangle(
-//             x, y,
-//             x + points[j * 2], y + points[j * 2 + 1],
-//             x + points[j * 2 + 2], y + points[j * 2 + 3],
-//             BLACK);
-//     }
-
-//     oled.drawCircle(x, y, size + 1, WHITE);
-//     oled.drawCircle(x, y, size / 2, WHITE);
-
-//     oled.fillTriangle(
-//         x, y,
-//         x + points[36], y + points[36 + 1] + 1,
-//         x + points[38], y + points[38 + 1] + 1, // pierwsza linia
-//         BLACK);
-
-//     oled.fillTriangle(
-//         x, y,
-//         x + points[36], y + points[36 + 1] + 1,
-//         x + points[34], y + points[34 + 1] + 1, // druga linia
-//         BLACK);
-//     oled.drawLine(
-//         x + points[38] / 2, y + points[38 + 1] / 2,
-//         x + points[38] - 1, y + points[38 + 1] - 1,
-//         WHITE);
-//     oled.drawLine(
-//         x + points[34] / 2, y + points[34 + 1] / 2,
-//         x + points[34] - 1, y + points[34 + 1] - 1,
-//         WHITE);
-
-//     oled.drawChar(x - 2, y - 3, c, WHITE, BLACK, 1);
-// }
-
-// void testScreen()
-// {
-//     drawCircleIndicator(24, 47, 16, animation * 64, '3');
-//     drawCircleIndicator(64, 47, 16, animation * 64, '4');
-//     drawCircleIndicator(104, 47, 16, animation * 64, '5');
-//     drawCircleIndicator(44, 17, 16, animation * 64, '1');
-//     drawCircleIndicator(84, 17, 16, animation * 64, '2');
-
-//     oled.display();
-//     animation++;
-//     if (animation >= 16)
-//     {
-//         animation = 0;
-//     }
-
-//     int16_t cursorX = oled.getCursorX();
-//     int16_t cursorY = oled.getCursorY();
-//     Serial.printf("X: %d Y: %d", cursorX, cursorY);
-// }
-void testScreen(){
+void testScreen()
+{
     oled.clearDisplay();
-    // oled.drawChar(44 - 2, 17 - 3, indicatorNr[0], WHITE, BLACK, 1);
-    // oled.drawChar(84 - 2, 17 - 3, indicatorNr[1], WHITE, BLACK, 1);
-    // oled.drawChar(64 - 2, 47 - 3, indicatorNr[2], WHITE, BLACK, 1);
-    // oled.drawChar(24 - 2, 47 - 3, indicatorNr[3], WHITE, BLACK, 1);
-    // oled.drawChar(104 - 2, 47 - 3,indicatorNr[4], WHITE, BLACK, 1);
-    
 
-    for (uint8_t i = 1; i < 27; i++)
+    // for loop generates gauge level using images 1-26 using i variable
+    for (uint8_t i = 1; i <= 26; i++)
     {
-        for (uint8_t c = 0; c <= 4; c++){
-        oled.drawChar(Xpos[c] + 14, Ypos[c] + 13, indicatorNr[c], WHITE, BLACK, 1);
-        oled.drawBitmap(Xpos[c], Ypos[c], epd_bitmap_allArray[i], 32, 32, WHITE);
-    }
-  oled.display();
-  delay(70);
-  
+        // second loop for generating gauge indicator digits
+        for (uint8_t c = 0; c <= 4; c++)
+        {
+            drawIndicator(c, i);
+        }
+        oled.display();
+        delay(70);
     }
     delay(570);
     oled.clearDisplay();
 
-for (uint8_t i = 26; i >= 1; i--)
+    for (uint8_t i = 26; i >= 1; i--)
     {
-        for (uint8_t c = 0; c <= 4; c++){
-        oled.drawChar(Xpos[c] + 14, Ypos[c] + 13, indicatorNr[c], WHITE, BLACK, 1);
-        oled.drawBitmap(Xpos[c], Ypos[c], epd_bitmap_allArray[i], 32, 32, WHITE);
+        for (uint8_t c = 0; c <= 4; c++)
+        {
+            drawIndicator(c, i);
+        }
+        oled.display();
+        oled.clearDisplay();
+        delay(70);
     }
-  oled.display();
-  oled.clearDisplay();
-  delay(70);
-    }    
 }
