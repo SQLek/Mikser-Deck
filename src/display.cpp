@@ -34,6 +34,22 @@ uint8_t indicatorYpos[] = {
     31,
 };
 
+uint16_t indicatorValues[] = {
+    0,
+    0,
+    0,
+    0,
+    0,
+};
+
+bool indicatorMute[] = {
+    false,
+    false,
+    false,
+    false,
+    false,
+};
+
 void setupScreen()
 {
     Wire.setPins(SCREEN_SDA, SCREEN_SCL);
@@ -63,32 +79,36 @@ void drawIndicator(uint8_t indicatorId, uint8_t frameId)
         WHITE);
 }
 
-void testScreen()
+void drawScreen()
 {
     oled.clearDisplay();
+    for (uint8_t c = 0; c <= 4; c++) {
 
-    // for loop generates gauge level using images 1-26 using i variable
-    for (uint8_t i = 1; i <= 26; i++)
-    {
-        // second loop for generating gauge indicator digits
-        for (uint8_t c = 0; c <= 4; c++)
-        {
-            drawIndicator(c, i);
-        }
-        oled.display();
-        delay(70);
-    }
-    delay(570);
-    oled.clearDisplay();
+        uint8_t frameId = indicatorValues[c] / 40 + 1;
+        if (frameId < 1)
+            frameId = 1;
+        if (frameId > epd_bitmap_allArray_LEN - 1)
+            frameId = epd_bitmap_allArray_LEN - 1;
+        if (indicatorMute[c])
+            frameId = 0;
 
-    for (uint8_t i = 26; i >= 1; i--)
-    {
-        for (uint8_t c = 0; c <= 4; c++)
-        {
-            drawIndicator(c, i);
-        }
-        oled.display();
-        oled.clearDisplay();
-        delay(70);
+        drawIndicator(c, frameId);
     }
+    oled.display();
+}
+
+void setIndicatorValue(uint8_t indicatorId, uint16_t value)
+{
+#ifdef SCREEN_SCL
+    if (indicatorId < sizeof(indicatorValues) / sizeof(uint16_t))
+        indicatorValues[indicatorId] = value;
+#endif
+}
+
+void setIndicatorMute(uint8_t indicatorId, bool mute)
+{
+    #ifdef SCREEN_SCL
+    if (indicatorId < sizeof(mute) / sizeof(bool))
+        indicatorMute[indicatorId] = mute;
+#endif
 }
