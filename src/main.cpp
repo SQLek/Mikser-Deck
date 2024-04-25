@@ -30,7 +30,7 @@ void setup()
 
   Serial.begin(9600);
 
-#ifdef SCREEN_SCL
+#ifdef LIB_eSPI
   setupScreen();
 #endif
 }
@@ -112,7 +112,7 @@ void loop()
   readButtonsSendSerial();
 #endif
 
-#ifdef SCREEN_SCL
+#ifdef LIB_eSPI
   drawScreen();
 #endif
 }

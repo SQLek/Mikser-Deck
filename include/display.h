@@ -6,11 +6,11 @@
 void setIndicatorValue(uint8_t indicatorId, uint16_t value);
 void setIndicatorMute(uint8_t indicatorId, bool mute);
 
-#ifdef SCREEN_SCL
+#ifdef LIB_eSPI
 
 void setupScreen();
 void drawScreen();
 
-#endif /* SCREEN_SCL */
+#endif /* LIB_eSPI */
 
 #endif /* __DISPLAY_H */
