@@ -20,6 +20,7 @@
 #define USER_SETUP_LOADED
 #define ST7789_DRIVER
 #define TFT_WIDTH 170 // ST7789 170 x 320
+#define TFT_HEIGHT 320
 
 // If a backlight control signal is available then define the TFT_BL pin in Section 2
 // below. The backlight will be turned ON when tft.begin() is called, but the library
