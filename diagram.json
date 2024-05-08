@@ -1,0 +1,39 @@
+{
+  "version": 1,
+  "author": "Anonymous maker",
+  "editor": "wokwi",
+  "parts": [
+    { "type": "board-esp32-s2-devkitm-1", "id": "esp", "top": -4.31, "left": 4.57, "attrs": {} },
+    {
+      "type": "board-ili9341-cap-touch",
+      "id": "lcd1",
+      "top": -32.52,
+      "left": -353.54,
+      "rotate": 270,
+      "attrs": { 
+       }
+    },
+    {
+      "type": "wokwi-slide-potentiometer",
+      "id": "pot1",
+      "top": 273.8,
+      "left": -193,
+      "attrs": { "travelLength": "30" }
+    }
+  ],
+  "connections": [
+    [ "esp:TX", "$serialMonitor:RX", "", [] ],
+    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "lcd1:VCC", "esp:5V", "red", [ "h67.2", "v52.31" ] ],
+    [ "lcd1:GND", "esp:GND.1", "black", [ "h76.8", "v71.51" ] ],
+    [ "lcd1:CS", "esp:18", "green", [ "h86.4", "v42.71" ] ],
+    [ "lcd1:RST", "esp:-1", "green", [ "h57.6", "v-72.49" ] ],
+    [ "lcd1:D/C", "esp:35", "green", [ "h76.8", "v-82.09" ] ],
+    [ "lcd1:MOSI", "esp:37", "green", [ "h96", "v38.4" ] ],
+    [ "lcd1:SCK", "esp:39", "green", [ "h105.6", "v57.6" ] ],
+    [ "pot1:GND", "esp:GND.1", "black", [ "v0" ] ],
+    [ "pot1:SIG", "esp:1", "cyan", [ "h-28.8", "v-106.4", "h182.4", "v-172.8" ] ],
+    [ "pot1:VCC", "esp:3V3", "red", [ "h9.6", "v-67.2", "h153.6", "v-240" ] ]
+  ],
+  "dependencies": {}
+}
