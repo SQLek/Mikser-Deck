@@ -30,7 +30,7 @@ void setup()
 
   Serial.begin(9600);
 
-#ifdef SCREEN_SCL
+#ifdef LIB_eSPI
   setupScreen();
 #endif
 }
@@ -44,7 +44,9 @@ void readSlidersSendSerial()
     if (i != 0)
       Serial.print("|");
 
-    Serial.print(String(analogRead(analogInputs[i])));
+    uint16_t value = analogRead(analogInputs[i]);
+    setIndicatorValue(i, value);
+    Serial.print(String(value));
   }
   Serial.println();
 }
@@ -66,6 +68,7 @@ void readButtonsSendSerial()
     // check if value has changed if not then skip and send over serial
     if (value == lastValue)
     {
+      setIndicatorMute(i, buttonStates[i]);
       Serial.print("|");
       Serial.print(String(buttonStates[i]));
       continue;
@@ -74,6 +77,7 @@ void readButtonsSendSerial()
     // if debouncing timer not elapsed skip button check and send over serial
     if (buttonTimers[i].running && !buttonTimers[i].elapsed())
     {
+      setIndicatorMute(i, buttonStates[i]);
       Serial.print("|");
       Serial.print(String(buttonStates[i]));
       continue;
@@ -89,6 +93,7 @@ void readButtonsSendSerial()
       buttonStates[i] = ~buttonStates[i] & 0x01;
     }
 
+    setIndicatorMute(i, buttonStates[i]);
     Serial.print("|");
     Serial.print(String(buttonStates[i]));
   }
@@ -107,8 +112,7 @@ void loop()
   readButtonsSendSerial();
 #endif
 
-#ifdef SCREEN_SCL
-  testScreen();
-  sleep(2);
+#ifdef LIB_eSPI
+  drawScreen();
 #endif
 }

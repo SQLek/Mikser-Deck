@@ -1,4 +1,4 @@
-#define POTS_PINS 1
+#define POTS_PINS 13
 
 //#define SMOOTH_INDICATOR
 #define FLOWER_INDICATOR
@@ -21,9 +21,17 @@
 
 #define LIB_eSPI
 #define USER_SETUP_LOADED
+//===== for physical S2
+//#define ST7789_DRIVER // orginal screen
+//#define TFT_WIDTH 170 // ST7789 170 x 320
 
-#define ST7789_DRIVER // orginal screen
-#define TFT_WIDTH 170 // ST7789 170 x 320
+//==== for wokwi
+#define ILI9341_DRIVER 
+#define TFT_WIDTH 320  
+#define TFT_HEIGHT 240
+//#define TFT_INVERSION_OFF
+//#define TFT_RGB_ORDER TFT_BGR
+
 
 // If a backlight control signal is available then define the TFT_BL pin in Section 2
 // below. The backlight will be turned ON when tft.begin() is called, but the library
@@ -35,8 +43,8 @@
 #define TFT_BACKLIGHT_ON HIGH // Level to turn ON back-light (HIGH or LOW)
 #define TFT_MOSI 37           // In some display driver board, it might be written as "SDA" and so on.
 #define TFT_SCLK 39
-#define TFT_CS 18  // Chip select control pin
-#define TFT_DC 35  // Data Command control pin
+#define TFT_CS 18 // Chip select control pin
+#define TFT_DC 35 // Data Command control pin
 #define TFT_RST -1 // Reset pin (could connect to Arduino RESET pin)
 
 // Comment out the #defines below with // to stop that font being loaded
