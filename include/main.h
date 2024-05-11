@@ -1,11 +1,6 @@
 #include <Arduino.h>
 #include "avdweb_VirtualDelay.h"
 
-// #define POTS_PINS 4
-// #define MUTE_PINS 47,48
-// #define MACRO_KEYPAD;
-// #define USES_SCREEN;
-
 #ifdef POTS_PINS
 #define POTS_ENABLE
 // set potentiometer pin numbers.

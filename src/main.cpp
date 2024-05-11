@@ -22,7 +22,7 @@ void setup()
   buttonStates = new uint8_t[numButtons];
   for (uint8_t i = 0; i < numButtons; i++)
   {
-    pinMode(buttonInputs[i], INPUT);
+    pinMode(buttonInputs[i], INPUT_PULLUP);
     buttonLastValues[i] = 0;
     buttonStates[i] = 0;
   }
@@ -115,4 +115,5 @@ void loop()
 #ifdef LIB_eSPI
   drawScreen();
 #endif
+
 }

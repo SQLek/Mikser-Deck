@@ -1,4 +1,5 @@
 #include "display.h"
+#include "main.h"
 
 #include <TFT_eSPI.h>
 #include <SPI.h>
@@ -7,21 +8,8 @@
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 
-uint16_t indicatorValues[] = {
-    0,
-    0,
-    0,
-    0,
-    0,
-};
-
-bool indicatorMute[] = {
-    false,
-    false,
-    false,
-    false,
-    false,
-};
+uint16_t indicatorValues[numPots];
+bool indicatorMute[numButtons];
 
 void setupScreen()
 {
@@ -29,15 +17,18 @@ void setupScreen()
     tft.setRotation(7);
     sprite.setTextSize(4);
     sprite.createSprite(TFT_HEIGHT, TFT_WIDTH, 1);
-}
+    for (int i = 0; i < numButtons; i++) {
+    indicatorMute[i]= false;
+    }
+    }
 
 void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
     int angleValue = map(indicatorValues[indicatorId], 0, 1023, 20, 320);
     for (int angle = 20; angle <= 320; angle += 20)
     {
-        float sx = icos((angle - 90));// * 0.0174532925);
-        float sy = isin((angle - 90));// * 0.0174532925);
+        float sx = icos((angle - 90)); // * 0.0174532925);
+        float sy = isin((angle - 90)); // * 0.0174532925);
 
         float xp1 = sx * 26 + x;
         float yp1 = sy * 26 + y;
@@ -88,9 +79,8 @@ void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
         }
         uint16_t colour = sprite.color565(red, green, blue);
         sprite.drawWedgeLine(xp1, yp1, xp2, yp2, 2, 5, colour, TFT_BLACK);
-        }
+    }
 }
-
 
 void drawIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
@@ -120,25 +110,32 @@ void drawIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
     sprite.drawChar(0x31 + indicatorId, x - 11, y - 14);
 }
 
+void drawMuteIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
+{
+    if (indicatorMute[indicatorId] == false)
+    return;
+    sprite.drawWideLine(x-35, y-36, x+35, y+35, 8, TFT_RED, TFT_BLACK);
+    sprite.drawWideLine(x+35, y-36, x-35, y+35, 8, TFT_RED, TFT_BLACK);
+}
 
 void drawScreen()
 {
     sprite.fillSprite(TFT_BLACK);
     for (uint8_t c = 0; c <= 4; c++)
     {
-    //uint8_t c = 0;
-    uint16_t x = 50 + c * 51; // X position of meters first value is base and second value is for next meters
-    uint16_t y = 44;          // y position of meters
-    if (c % 2 == 1)           // if value is odd then move down
-        y += 79;              // y position of bottom meters
+        // uint8_t c = 0;
+        uint16_t x = 50 + c * 51; // X position of meters first value is base and second value is for next meters
+        uint16_t y = 44;          // y position of meters
+        if (c % 2 == 1)           // if value is odd then move down
+            y += 79;              // y position of bottom meters
 
-        
 #ifdef SMOOTH_INDICATOR
-    // drawIndicator(x, y, c);
+        drawIndicator(x, y, c);
 #endif
 #ifdef FLOWER_INDICATOR
-    drawFlowerIndicator(x, y, c);
+        drawFlowerIndicator(x, y, c);
 #endif
+        drawMuteIndicator(x, y, c);
     }
     sprite.pushSprite(0, 0);
 }
@@ -154,7 +151,8 @@ void setIndicatorValue(uint8_t indicatorId, uint16_t value)
 void setIndicatorMute(uint8_t indicatorId, bool mute)
 {
 #ifdef LIB_eSPI
-    if (indicatorId < sizeof(mute) / sizeof(bool))
+    if (indicatorId < sizeof(mute) / sizeof(bool)) {
         indicatorMute[indicatorId] = mute;
+    }
 #endif
 }
