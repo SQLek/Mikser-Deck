@@ -118,8 +118,8 @@
     { "type": "wokwi-led", "id": "led1", "top": 54, "left": 445.4, "attrs": { "color": "red" } }
   ],
   "connections": [
-    [ "esp:TX", "$serialMonitor:RX", "", [] ],
-    [ "esp:RX", "$serialMonitor:TX", "", [] ],
+    [ "esp:17", "$serialMonitor:RX", "", [] ],
+    [ "esp:16", "$serialMonitor:TX", "", [] ],
     [ "lcd1:VCC", "esp:5V", "red", [ "h67.2", "v52.31" ] ],
     [ "lcd1:GND", "esp:GND.1", "black", [ "h76.8", "v71.51" ] ],
     [ "lcd1:RST", "esp:-1", "green", [ "h57.6", "v-72.49" ] ],

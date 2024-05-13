@@ -1,3 +1,6 @@
+#ifndef __MAIN_H
+#define __MAIN_H
+
 #include <Arduino.h>
 #include "avdweb_VirtualDelay.h"
 
@@ -19,3 +22,5 @@ static VirtualDelay *buttonTimers;
 static uint8_t *buttonLastValues;
 static uint8_t *buttonStates;
 #endif
+
+#endif /* __MAIN_H */

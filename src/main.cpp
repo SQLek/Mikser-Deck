@@ -1,6 +1,7 @@
 
 #include "main.h"
 #include "display.h"
+#include <HardwareSerial.h>
 
 void setup()
 {
@@ -28,7 +29,9 @@ void setup()
   }
 #endif
 
-  Serial.begin(9600);
+  //Serial.begin(9600);
+Serial0.begin(9600, SERIAL_8N1, 16, 17);
+
 
 #ifdef LIB_eSPI
   setupScreen();
@@ -42,13 +45,13 @@ void readSlidersSendSerial()
   for (uint8_t i = 0; i < numPots; i++)
   {
     if (i != 0)
-      Serial.print("|");
+      Serial0.print("|");
 
     uint16_t value = analogRead(analogInputs[i]);
     setIndicatorValue(i, value);
-    Serial.print(String(value));
+    Serial0.print(String(value));
   }
-  Serial.println();
+  Serial0.println();
 }
 #endif
 
@@ -59,18 +62,18 @@ void readButtonsSendSerial()
     return;
 
   // read each button status and send data over serial
-  Serial.print("but");
+  Serial0.print("but");
   for (uint8_t i = 0; i < numButtons; i++)
   {
     uint8_t lastValue = buttonLastValues[i];
-    uint8_t value = digitalRead(buttonInputs[i]);
+    uint8_t value = digitalRead(buttonInputs[i]) == 0;
 
     // check if value has changed if not then skip and send over serial
     if (value == lastValue)
     {
       setIndicatorMute(i, buttonStates[i]);
-      Serial.print("|");
-      Serial.print(String(buttonStates[i]));
+      Serial0.print("|");
+      Serial0.print(String(buttonStates[i]));
       continue;
     }
 
@@ -78,14 +81,14 @@ void readButtonsSendSerial()
     if (buttonTimers[i].running && !buttonTimers[i].elapsed())
     {
       setIndicatorMute(i, buttonStates[i]);
-      Serial.print("|");
-      Serial.print(String(buttonStates[i]));
+      Serial0.print("|");
+      Serial0.print(String(buttonStates[i]));
       continue;
     }
 
     // button status changed, restart timer
     buttonLastValues[i] = value;
-    buttonTimers[i].start(50);
+    buttonTimers[i].start(20);
 
     // if pressed toggle button value and send over serial
     if (value)
@@ -94,10 +97,10 @@ void readButtonsSendSerial()
     }
 
     setIndicatorMute(i, buttonStates[i]);
-    Serial.print("|");
-    Serial.print(String(buttonStates[i]));
+    Serial0.print("|");
+    Serial0.print(String(buttonStates[i]));
   }
-  Serial.println();
+  Serial0.println();
 }
 #endif
 

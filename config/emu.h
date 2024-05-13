@@ -6,8 +6,8 @@
 #define MUTE_PINS 36, 40, 39, 37, 38, 35, 33
 
 // visualisation type:
-#define SMOOTH_INDICATOR
-//#define FLOWER_INDICATOR
+//#define SMOOTH_INDICATOR
+#define FLOWER_INDICATOR
 
 //============================================================================
 // TFT eSPI config
@@ -23,7 +23,7 @@
 #define ILI9341_DRIVER 
 #define TFT_WIDTH 320  
 #define TFT_HEIGHT 240
-//#define TFT_INVERSION_OFF
+//#define TFT_INVERSION_ON
 //#define TFT_RGB_ORDER TFT_BGR
 
 
