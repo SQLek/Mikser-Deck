@@ -3,7 +3,6 @@
 
 #include <TFT_eSPI.h>
 #include <SPI.h>
-#include <FastTrig.h>
 #include "speaker.h"
 #include "microphone.h"
 
