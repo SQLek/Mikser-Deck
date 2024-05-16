@@ -1,19 +1,13 @@
-#define POTS_PINS 13
+//define potentiometer pins:
+#define POTS_PINS 3, 5, 7, 6, 9, 8
 
+//define mute buttons pins:
+//first defined pin is always master volume mute, last defined pin is always microphone mute pin
+#define MUTE_PINS 36, 40, 39, 37, 38, 35, 33
+
+// visualisation type:
 //#define SMOOTH_INDICATOR
 #define FLOWER_INDICATOR
-// #define MUTE_PINS 40
-
-// uses adafruit SSD1306 lib
-// #define SSD1306
-
-// #ifdef SSD1306
-// #define SCREEN_SCL 39
-// #define SCREEN_SDA 37
-// #define SCREEN_WIDTH 128 // OLED display width, in pixels
-// #define SCREEN_HEIGHT 64 // OLED display height, in pixels
-// #define SSD1306 0x3C
-// #endif
 
 //============================================================================
 // TFT eSPI config
@@ -29,7 +23,7 @@
 #define ILI9341_DRIVER 
 #define TFT_WIDTH 320  
 #define TFT_HEIGHT 240
-//#define TFT_INVERSION_OFF
+//#define TFT_INVERSION_ON
 //#define TFT_RGB_ORDER TFT_BGR
 
 
@@ -39,13 +33,13 @@
 // driven with a PWM signal or turned OFF/ON then this must be handled by the user
 // sketch. e.g. with digitalWrite(TFT_BL, LOW);
 
-#define TFT_BL 3              // LED back-light control pin
+#define TFT_BL 14              // LED back-light control pin
 #define TFT_BACKLIGHT_ON HIGH // Level to turn ON back-light (HIGH or LOW)
-#define TFT_MOSI 37           // In some display driver board, it might be written as "SDA" and so on.
-#define TFT_SCLK 39
-#define TFT_CS 18 // Chip select control pin
-#define TFT_DC 35 // Data Command control pin
-#define TFT_RST -1 // Reset pin (could connect to Arduino RESET pin)
+#define TFT_MOSI 11           // In some display driver board, it might be written as "SDA" and so on.
+#define TFT_SCLK 12
+#define TFT_CS 10 // Chip select control pin
+#define TFT_DC 4 // Data Command control pin
+#define TFT_RST 2 // Reset pin (could connect to Arduino RESET pin)
 
 // Comment out the #defines below with // to stop that font being loaded
 // The ESP8366 and ESP32 have plenty of memory so commenting out fonts is not

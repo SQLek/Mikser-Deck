@@ -1,43 +1,51 @@
 #include "display.h"
+#include "main.h"
 
 #include <TFT_eSPI.h>
 #include <SPI.h>
-#include <FastTrig.h>
+#include "speaker.h"
+#include "microphone.h"
 
 TFT_eSPI tft = TFT_eSPI();
 TFT_eSprite sprite = TFT_eSprite(&tft);
 
-uint16_t indicatorValues[] = {
-    0,
-    0,
-    0,
-    0,
-    0,
-};
-
-bool indicatorMute[] = {
-    false,
-    false,
-    false,
-    false,
-    false,
-};
+uint16_t indicatorValues[numPots];
+uint8_t indicatorMute[numButtons];
+const float radianFactor = 0.0174532925;
+static float precalcSin[17];
+static float precalcCos[17];
 
 void setupScreen()
 {
     tft.init();
-    tft.setRotation(7);
+    tft.setRotation(3);
     sprite.setTextSize(4);
+    sprite.setSwapBytes(true);
     sprite.createSprite(TFT_HEIGHT, TFT_WIDTH, 1);
+    for (int i = 0; i < numButtons; i++)
+    {
+        indicatorMute[i] = 0;
+    }
+
+    for (int i = 0; i <= 16; ++i)
+    {
+        int angle = -160 + i * 20;
+        precalcSin[i] = sin((angle - 90) * radianFactor);
+        precalcCos[i] = cos((angle - 90) * radianFactor);
+    }
 }
 
 void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
-    int angleValue = map(indicatorValues[indicatorId], 0, 1023, 20, 320);
-    for (int angle = 20; angle <= 320; angle += 20)
+    int angleValue = map(indicatorValues[indicatorId], 0, 1023, -160, 160);
+    // Przedpolicz wartości sinusa i cosinusa, aby uniknąć powtarzania obliczeń w pętli
+
+    uint16_t lastDrawnColour = sprite.color565(63, 63, 63);
+    for (int i = 0; i <= 16; ++i)
     {
-        float sx = icos((angle - 90));// * 0.0174532925);
-        float sy = isin((angle - 90));// * 0.0174532925);
+        int angle = -160 + i * 20;
+        float sx = precalcCos[i];
+        float sy = precalcSin[i];
 
         float xp1 = sx * 26 + x;
         float yp1 = sy * 26 + y;
@@ -45,39 +53,29 @@ void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
         float xp2 = sx * 40 + x;
         float yp2 = sy * 40 + y;
 
-        byte red = 127;
-        byte green = 127;
-        byte blue = 127;
+        byte red = 0, green = 0, blue = 0;
 
-        if (angle == 320)
+        if (angle == -160)
+        {
+            blue = 255;
+        }
+        else if (angle < 0)
+        {
+            green = map(angle, -160, 0, 0, 255);
+            blue = map(angle, -160, 0, 255, 0);
+        }
+        else if (angle == 0)
+        {
+            green = 255;
+        }
+        else if (angle > 0)
+        {
+            red = map(angle, 0, 160, 0, 255);
+            green = map(angle, 0, 160, 255, 0);
+        }
+        else if (angle == 160)
         {
             red = 255;
-            green = 0;
-            blue = 0;
-        }
-        if (angle < 320 && angle > 180)
-        {
-            red = map(angle, 320, 180, 255, 0);
-            green = map(angle, 320, 180, 0, 255);
-            blue = 0;
-        }
-        if (angle == 180)
-        {
-            red = 0;
-            green = 255;
-            blue = 0;
-        }
-        if (angle > 20 && angle < 180)
-        {
-            red = 0;
-            green = map(angle, 20, 180, 0, 255);
-            blue = map(angle, 20, 180, 255, 0);
-        }
-        if (angle == 20)
-        {
-            red = 0;
-            green = 0;
-            blue = 255;
         }
 
         if (angle > angleValue)
@@ -86,11 +84,18 @@ void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
             green = 63;
             blue = 63;
         }
+        else
+        {
+            lastDrawnColour = sprite.color565(red, green, blue);
+        }
+
         uint16_t colour = sprite.color565(red, green, blue);
         sprite.drawWedgeLine(xp1, yp1, xp2, yp2, 2, 5, colour, TFT_BLACK);
-        }
-}
+    }
 
+    sprite.setTextColor(lastDrawnColour);
+    sprite.drawChar(0x31 + indicatorId - 1, x - 11, y - 14);
+}
 
 void drawIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
@@ -120,41 +125,68 @@ void drawIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
     sprite.drawChar(0x31 + indicatorId, x - 11, y - 14);
 }
 
+void drawMuteIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
+{
+    if (indicatorMute[indicatorId] == 0)
+        return;
+    sprite.drawWideLine(x - 35, y - 30, x + 35, y + 30, 8, TFT_RED, TFT_BLACK);
+    sprite.drawWideLine(x - 35, y - 30, x + 35, y + 30, 2, 0xea49, 0xe946);
+    sprite.drawWideLine(x + 35, y - 30, x - 35, y + 30, 8, TFT_RED, TFT_BLACK);
+    sprite.drawWideLine(x + 35, y - 30, x - 35, y + 30, 2, 0xea49, 0xe946);
+}
+
+void drawMuteSlimIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
+{
+    if (indicatorMute[indicatorId] == 0)
+        return;
+    sprite.drawWideLine(x - 15, y - 30, x + 15, y + 30, 8, TFT_RED, TFT_BLACK);
+    sprite.drawWideLine(x - 15, y - 30, x + 15, y + 30, 2, 0xea49, 0xe946);
+    sprite.drawWideLine(x + 15, y - 30, x - 15, y + 30, 8, TFT_RED, TFT_BLACK);
+    sprite.drawWideLine(x + 15, y - 30, x - 15, y + 30, 2, 0xea49, 0xe946);
+}
 
 void drawScreen()
 {
     sprite.fillSprite(TFT_BLACK);
-    for (uint8_t c = 0; c <= 4; c++)
+    for (uint8_t c = 1; c <= 5; c++)
     {
-    //uint8_t c = 0;
-    uint16_t x = 50 + c * 51; // X position of meters first value is base and second value is for next meters
-    uint16_t y = 44;          // y position of meters
-    if (c % 2 == 1)           // if value is odd then move down
-        y += 79;              // y position of bottom meters
+        // uint8_t c = 0;
+        uint16_t x = 50 + (c - 1) * 51; // X position of meters first value is base and second value is for next meters
+        uint16_t y = 79 + 44;           // y position of meters 44
+        if (c % 2 == 0)                 // if value is odd then move down
+            y -= 79;                    // y position of bottom meters +=79
 
-        
 #ifdef SMOOTH_INDICATOR
-    // drawIndicator(x, y, c);
+        drawIndicator(x, y, c);
 #endif
 #ifdef FLOWER_INDICATOR
-    drawFlowerIndicator(x, y, c);
+        drawFlowerIndicator(x, y, c);
 #endif
+        drawMuteIndicator(x, y, c);
     }
-    sprite.pushSprite(0, 0);
+    sprite.pushImage(5, 5, 43, 66, image_data_speaker);
+    drawMuteSlimIndicator(26, 35, 0);
+    sprite.pushImage(320 - 65, 5, 43, 65, image_data_microphone);
+    drawMuteSlimIndicator(320 - 44, 38, numButtons - 1);
+    sprite.pushSprite(0, 0, TFT_BLACK);
 }
 
 void setIndicatorValue(uint8_t indicatorId, uint16_t value)
 {
 #ifdef LIB_eSPI
     if (indicatorId < sizeof(indicatorValues) / sizeof(uint16_t))
+    {
         indicatorValues[indicatorId] = value;
+    }
 #endif
 }
 
-void setIndicatorMute(uint8_t indicatorId, bool mute)
+void setIndicatorMute(uint8_t indicatorId, uint8_t mute)
 {
 #ifdef LIB_eSPI
-    if (indicatorId < sizeof(mute) / sizeof(bool))
+    if (indicatorId < sizeof(indicatorMute) / sizeof(uint8_t))
+    {
         indicatorMute[indicatorId] = mute;
+    }
 #endif
 }

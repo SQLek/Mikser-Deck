@@ -1,10 +1,8 @@
+#ifndef __MAIN_H
+#define __MAIN_H
+
 #include <Arduino.h>
 #include "avdweb_VirtualDelay.h"
-
-// #define POTS_PINS 4
-// #define MUTE_PINS 47,48
-// #define MACRO_KEYPAD;
-// #define USES_SCREEN;
 
 #ifdef POTS_PINS
 #define POTS_ENABLE
@@ -24,3 +22,5 @@ static VirtualDelay *buttonTimers;
 static uint8_t *buttonLastValues;
 static uint8_t *buttonStates;
 #endif
+
+#endif /* __MAIN_H */

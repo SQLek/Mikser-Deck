@@ -4,7 +4,7 @@
 #include <Arduino.h>
 
 void setIndicatorValue(uint8_t indicatorId, uint16_t value);
-void setIndicatorMute(uint8_t indicatorId, bool mute);
+void setIndicatorMute(uint8_t indicatorId, uint8_t mute);
 
 #ifdef LIB_eSPI
 
