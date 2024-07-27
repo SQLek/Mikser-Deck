@@ -4,6 +4,12 @@
 #define FLOWER_INDICATOR
 #define MUTE_PINS 1, 14, 5, 7, 9, 11, 12
 
+// calibrate potentiometer values
+#define MAX_POT_VALUES 980
+#define MIN_POT_VALUES 15
+
+#define GFX_ON_CORE_1
+
 //============================================================================
 // TFT eSPI config
 //----------------------------------------------------------------------------

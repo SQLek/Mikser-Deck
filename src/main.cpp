@@ -3,6 +3,11 @@
 #include "display.h"
 // #include <HardwareSerial.h>
 
+#ifdef GFX_ON_CORE_1
+void loop2(void *pvParameters);
+TaskHandle_t GraphicsLoop;
+#endif
+
 void setup()
 {
 #ifdef POTS_ENABLE
@@ -35,6 +40,17 @@ void setup()
 #ifdef LIB_eSPI
   setupScreen();
 #endif
+
+#ifdef GFX_ON_CORE_1
+  xTaskCreatePinnedToCore(
+      loop2,
+      "GraphicsLoop",
+      100000,
+      NULL,
+      1,
+      &GraphicsLoop,
+      1);
+#endif
 }
 
 // read each slider status and send over serial
@@ -47,6 +63,11 @@ void readSlidersSendSerial()
       Serial.print("|");
 
     uint16_t value = analogRead(analogInputs[i]);
+    if (value >= MAX_POT_VALUES)
+      value = MAX_POT_VALUES - 1;
+    if (value <= MIN_POT_VALUES)
+      value = MIN_POT_VALUES + 1;
+    value = map(value, MAX_POT_VALUES, MIN_POT_VALUES, 0, 1023);
     setIndicatorValue(i, value);
     Serial.print(String(value));
   }
@@ -114,7 +135,22 @@ void loop()
   readButtonsSendSerial();
 #endif
 
+#ifndef GFX_ON_CORE_1
 #ifdef LIB_eSPI
   drawScreen();
 #endif
+#endif
 }
+
+#ifdef GFX_ON_CORE_1
+void loop2(void *pvParameters)
+{
+  while (true)
+  {
+#ifdef LIB_eSPI
+    drawScreen();
+    // Serial.println("", xPortGetCoreID());
+#endif
+  }
+}
+#endif

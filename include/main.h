@@ -15,6 +15,14 @@ const uint8_t analogInputs[] = {POTS_PINS};
 const uint8_t numPots = sizeof(analogInputs);
 #endif
 
+#ifndef MAX_POT_VALUES
+#define MAX_POT_VALUES 1023 // default values for pots (required for error check in VSCode as it doesnt find config.h injected through platformio.ini)
+#endif
+
+#ifndef MIN_POT_VALUES
+#define MIN_POT_VALUES 0 // default values for pots (required for error check in VSCode as it doesnt find config.h injected through platformio.ini)
+#endif
+
 #ifndef MUTE_PINS
 #define MUTE_PINS 1, 14, 5, 7, 9, 11, 12 // default pins (required for error check in VSCode as it doesnt find config.h injected through platformio.ini)
 #endif

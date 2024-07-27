@@ -21,8 +21,15 @@ const float radianFactor = 0.0174532925;
 static float precalcSin[17];
 static float precalcCos[17];
 
+uint8_t lastPetalIds[numPots];
+
 void setupScreen()
 {
+    for (int i = 0; i < numPots; i++)
+    {
+        lastPetalIds[i] = -1;
+    }
+
     tft.init();
     tft.setRotation(7);
     tft.fillScreen(TFT_BLACK);
@@ -45,18 +52,22 @@ void setupScreen()
         indicatorMute[i] = 0;
     }
 
+    // precalc sin and cos to save cpu cycles
     for (int i = 0; i <= 16; ++i)
     {
         int angle = -160 + i * 20;
         precalcSin[i] = sin((angle - 90) * radianFactor);
         precalcCos[i] = cos((angle - 90) * radianFactor);
     }
+
+    background.pushImage(0, 0, 320, 170, image_data_back);
 }
 
 void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
-    int angleValue = map(indicatorValues[indicatorId], 1000, 0, -160, 160);
-    // Przedpolicz wartości sinusa i cosinusa, aby uniknąć powtarzania obliczeń w pętli
+    int petalId = map(indicatorValues[indicatorId], 0, 1010, 0, 17);
+    if (petalId == lastPetalIds[indicatorId])
+        return;
 
     uint16_t lastDrawnColour = sprite.color565(63, 63, 63);
     for (int i = 0; i <= 16; ++i)
@@ -96,7 +107,7 @@ void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
             red = 255;
         }
 
-        if (angle > angleValue)
+        if (i >= petalId)
         {
             red = 63;
             green = 63;
@@ -113,6 +124,7 @@ void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 
     sprite.setTextColor(lastDrawnColour);
     sprite.drawChar(0x31 + indicatorId - 1, x - 11, y - 14);
+    lastPetalIds[indicatorId] = petalId;
 }
 
 void drawIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
@@ -170,7 +182,6 @@ void drawMuteSlimIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 void drawScreen()
 {
     baseSprite.fillSprite(TFT_BLACK);
-    background.pushImage(0, 0, 320, 170, image_data_back);
 
     muteSprite.fillSprite(TFT_BLACK);
 
@@ -190,9 +201,9 @@ void drawScreen()
 #endif
         drawMuteIndicator(x, y, c);
 
-#ifdef MUTE_ENABLE
-        readButtonsSendSerial();
-#endif
+        // #ifdef MUTE_ENABLE
+        //         readButtonsSendSerial();
+        // #endif
     }
     imgSprite.pushImage(10, 5, 43, 66, image_data_speaker);
     drawMuteSlimIndicator(26, 35, 0);
@@ -201,6 +212,7 @@ void drawScreen()
 
     background.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
     imgSprite.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
+
     sprite.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
     muteSprite.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
     baseSprite.pushSprite(0, 0);
