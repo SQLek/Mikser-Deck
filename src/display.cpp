@@ -5,9 +5,15 @@
 #include <SPI.h>
 #include "speaker.h"
 #include "microphone.h"
+#include "back.h"
+#include "button.h"
 
 TFT_eSPI tft = TFT_eSPI();
+TFT_eSprite baseSprite = TFT_eSprite(&tft);
+TFT_eSprite background = TFT_eSprite(&tft);
 TFT_eSprite sprite = TFT_eSprite(&tft);
+TFT_eSprite imgSprite = TFT_eSprite(&tft);
+TFT_eSprite muteSprite = TFT_eSprite(&tft);
 
 uint16_t indicatorValues[numPots];
 uint8_t indicatorMute[numButtons];
@@ -18,10 +24,22 @@ static float precalcCos[17];
 void setupScreen()
 {
     tft.init();
-    tft.setRotation(3);
+    tft.setRotation(7);
+    tft.fillScreen(TFT_BLACK);
     sprite.setTextSize(4);
-    sprite.setSwapBytes(true);
-    sprite.createSprite(TFT_HEIGHT, TFT_WIDTH, 1);
+
+    pinMode(3, OUTPUT);
+    analogWrite(3, 120);
+
+    imgSprite.setSwapBytes(true);
+    background.setSwapBytes(true);
+
+    sprite.createSprite(TFT_HEIGHT, TFT_WIDTH);
+    imgSprite.createSprite(TFT_HEIGHT, TFT_WIDTH);
+    muteSprite.createSprite(TFT_HEIGHT, TFT_WIDTH);
+    background.createSprite(TFT_HEIGHT, TFT_WIDTH);
+    baseSprite.createSprite(TFT_HEIGHT, TFT_WIDTH);
+
     for (int i = 0; i < numButtons; i++)
     {
         indicatorMute[i] = 0;
@@ -37,7 +55,7 @@ void setupScreen()
 
 void drawFlowerIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
-    int angleValue = map(indicatorValues[indicatorId], 0, 1023, -160, 160);
+    int angleValue = map(indicatorValues[indicatorId], 1000, 0, -160, 160);
     // Przedpolicz wartości sinusa i cosinusa, aby uniknąć powtarzania obliczeń w pętli
 
     uint16_t lastDrawnColour = sprite.color565(63, 63, 63);
@@ -128,31 +146,39 @@ void drawIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 void drawMuteIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
     if (indicatorMute[indicatorId] == 0)
+    {
         return;
-    sprite.drawWideLine(x - 35, y - 30, x + 35, y + 30, 8, TFT_RED, TFT_BLACK);
-    sprite.drawWideLine(x - 35, y - 30, x + 35, y + 30, 2, 0xea49, 0xe946);
-    sprite.drawWideLine(x + 35, y - 30, x - 35, y + 30, 8, TFT_RED, TFT_BLACK);
-    sprite.drawWideLine(x + 35, y - 30, x - 35, y + 30, 2, 0xea49, 0xe946);
+    }
+    muteSprite.drawWideLine(x - 35, y - 30, x + 35, y + 30, 8, TFT_RED, TFT_BLACK);
+    muteSprite.drawWideLine(x - 35, y - 30, x + 35, y + 30, 2, 0xea49, 0xe946);
+    muteSprite.drawWideLine(x + 35, y - 30, x - 35, y + 30, 8, TFT_RED, TFT_BLACK);
+    muteSprite.drawWideLine(x + 35, y - 30, x - 35, y + 30, 2, 0xea49, 0xe946);
 }
 
 void drawMuteSlimIndicator(uint16_t x, uint16_t y, uint8_t indicatorId)
 {
     if (indicatorMute[indicatorId] == 0)
+    {
         return;
-    sprite.drawWideLine(x - 15, y - 30, x + 15, y + 30, 8, TFT_RED, TFT_BLACK);
-    sprite.drawWideLine(x - 15, y - 30, x + 15, y + 30, 2, 0xea49, 0xe946);
-    sprite.drawWideLine(x + 15, y - 30, x - 15, y + 30, 8, TFT_RED, TFT_BLACK);
-    sprite.drawWideLine(x + 15, y - 30, x - 15, y + 30, 2, 0xea49, 0xe946);
+    }
+    muteSprite.drawWideLine(x - 15, y - 29, x + 25, y + 30, 8, TFT_RED, TFT_BLACK);
+    muteSprite.drawWideLine(x - 15, y - 29, x + 25, y + 30, 2, 0xea49, 0xe946);
+    muteSprite.drawWideLine(x + 25, y - 29, x - 15, y + 30, 8, TFT_RED, TFT_BLACK);
+    muteSprite.drawWideLine(x + 25, y - 29, x - 15, y + 30, 2, 0xea49, 0xe946);
 }
 
 void drawScreen()
 {
-    sprite.fillSprite(TFT_BLACK);
+    baseSprite.fillSprite(TFT_BLACK);
+    background.pushImage(0, 0, 320, 170, image_data_back);
+
+    muteSprite.fillSprite(TFT_BLACK);
+
     for (uint8_t c = 1; c <= 5; c++)
     {
         // uint8_t c = 0;
-        uint16_t x = 50 + (c - 1) * 51; // X position of meters first value is base and second value is for next meters
-        uint16_t y = 79 + 44;           // y position of meters 44
+        uint16_t x = 58 + (c - 1) * 51; // X position of meters first value is base and second value is for next meters
+        uint16_t y = 79 + 46;           // y position of meters 44
         if (c % 2 == 0)                 // if value is odd then move down
             y -= 79;                    // y position of bottom meters +=79
 
@@ -163,12 +189,21 @@ void drawScreen()
         drawFlowerIndicator(x, y, c);
 #endif
         drawMuteIndicator(x, y, c);
+
+#ifdef MUTE_ENABLE
+        readButtonsSendSerial();
+#endif
     }
-    sprite.pushImage(5, 5, 43, 66, image_data_speaker);
+    imgSprite.pushImage(10, 5, 43, 66, image_data_speaker);
     drawMuteSlimIndicator(26, 35, 0);
-    sprite.pushImage(320 - 65, 5, 43, 65, image_data_microphone);
-    drawMuteSlimIndicator(320 - 44, 38, numButtons - 1);
-    sprite.pushSprite(0, 0, TFT_BLACK);
+    imgSprite.pushImage(320 - 55, 5, 43, 65, image_data_microphone);
+    drawMuteSlimIndicator(320 - 40, 38, numButtons - 1);
+
+    background.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
+    imgSprite.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
+    sprite.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
+    muteSprite.pushToSprite(&baseSprite, 0, 0, TFT_BLACK);
+    baseSprite.pushSprite(0, 0);
 }
 
 void setIndicatorValue(uint8_t indicatorId, uint16_t value)

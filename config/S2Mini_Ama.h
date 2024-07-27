@@ -1,19 +1,8 @@
-#define POTS_PINS 1
+#define POTS_PINS 2, 4, 6, 8, 10, 13
 
-//#define SMOOTH_INDICATOR
+// #define SMOOTH_INDICATOR
 #define FLOWER_INDICATOR
-// #define MUTE_PINS 40
-
-// uses adafruit SSD1306 lib
-// #define SSD1306
-
-// #ifdef SSD1306
-// #define SCREEN_SCL 39
-// #define SCREEN_SDA 37
-// #define SCREEN_WIDTH 128 // OLED display width, in pixels
-// #define SCREEN_HEIGHT 64 // OLED display height, in pixels
-// #define SSD1306 0x3C
-// #endif
+#define MUTE_PINS 1, 14, 5, 7, 9, 11, 12
 
 //============================================================================
 // TFT eSPI config
@@ -23,6 +12,7 @@
 #define USER_SETUP_LOADED
 
 #define ST7789_DRIVER // orginal screen
+// #define ST7789_2_DRIVER
 #define TFT_WIDTH 170 // ST7789 170 x 320
 
 // If a backlight control signal is available then define the TFT_BL pin in Section 2
@@ -31,13 +21,15 @@
 // driven with a PWM signal or turned OFF/ON then this must be handled by the user
 // sketch. e.g. with digitalWrite(TFT_BL, LOW);
 
-#define TFT_BL 3              // LED back-light control pin
+#define CGRAM_OFFSET //??
+
+// #define TFT_BL 3              // LED back-light control pin
 #define TFT_BACKLIGHT_ON HIGH // Level to turn ON back-light (HIGH or LOW)
 #define TFT_MOSI 37           // In some display driver board, it might be written as "SDA" and so on.
 #define TFT_SCLK 39
 #define TFT_CS 18  // Chip select control pin
 #define TFT_DC 35  // Data Command control pin
-#define TFT_RST -1 // Reset pin (could connect to Arduino RESET pin)
+#define TFT_RST 36 // Reset pin (could connect to Arduino RESET pin)
 
 // Comment out the #defines below with // to stop that font being loaded
 // The ESP8366 and ESP32 have plenty of memory so commenting out fonts is not
@@ -89,11 +81,11 @@
 // #define SPI_FREQUENCY   1000000
 // #define SPI_FREQUENCY   5000000
 // #define SPI_FREQUENCY  10000000
-// #define SPI_FREQUENCY  20000000
-#define SPI_FREQUENCY 27000000
-// #define SPI_FREQUENCY  40000000
-// #define SPI_FREQUENCY  55000000 // STM32 SPI1 only (SPI2 maximum is 27MHz)
-// #define SPI_FREQUENCY  80000000
+// #define SPI_FREQUENCY 20000000
+// #define SPI_FREQUENCY 27000000
+#define SPI_FREQUENCY 40000000
+//  #define SPI_FREQUENCY  55000000 // STM32 SPI1 only (SPI2 maximum is 27MHz)
+//  #define SPI_FREQUENCY  80000000
 
 // Optional reduced SPI frequency for reading TFT
 #define SPI_READ_FREQUENCY 20000000

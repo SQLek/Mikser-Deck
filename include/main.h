@@ -1,14 +1,22 @@
-#ifndef __MAIN_H
+#ifndef __MAIN_H // header guard
 #define __MAIN_H
 
 #include <Arduino.h>
 #include "avdweb_VirtualDelay.h"
+
+#ifndef POTS_PINS
+#define POTS_PINS 2, 4, 6, 8, 10, 13 // default pins (required for error check in VSCode as it doesnt find config.h injected through platformio.ini)
+#endif
 
 #ifdef POTS_PINS
 #define POTS_ENABLE
 // set potentiometer pin numbers.
 const uint8_t analogInputs[] = {POTS_PINS};
 const uint8_t numPots = sizeof(analogInputs);
+#endif
+
+#ifndef MUTE_PINS
+#define MUTE_PINS 1, 14, 5, 7, 9, 11, 12 // default pins (required for error check in VSCode as it doesnt find config.h injected through platformio.ini)
 #endif
 
 #ifdef MUTE_PINS
